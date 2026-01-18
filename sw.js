@@ -1,5 +1,9 @@
 // Service Worker para PWA de Frases Filosóficas
-// Compatible con OneSignal
+// Compatible con OneSignal - Importamos OneSignal SDK en nuestro SW
+
+// Importar el Service Worker de OneSignal
+// Esto nos permite usar un solo Service Worker para todo
+importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
 
 const CACHE_NAME = 'frases-filosoficas-v1';
 

@@ -25,16 +25,27 @@ let oneSignalInstance = null;
 // Detectar ruta base automáticamente para GitHub Pages
 function getBasePath() {
     const path = window.location.pathname;
-    // Si la ruta es solo '/' o termina en index.html, está en la raíz
-    if (path === '/' || path.endsWith('index.html') || path.endsWith('/')) {
+    console.log('Path completo:', path);
+    
+    // Si la ruta es exactamente '/', está en la raíz
+    if (path === '/') {
         return '/';
     }
+    
     // Extraer el nombre del repositorio de la ruta
-    // Ejemplo: /notificaciones/ -> /notificaciones/
+    // Ejemplo: /noti/ -> /noti/
+    // Ejemplo: /noti/index.html -> /noti/
+    // Ejemplo: /noti -> /noti/
     const parts = path.split('/').filter(p => p && p !== 'index.html');
+    
     if (parts.length > 0) {
-        return '/' + parts[0] + '/';
+        // Si el primer elemento no es vacío, es una subcarpeta (repositorio)
+        const basePath = '/' + parts[0] + '/';
+        console.log('Ruta base detectada (subcarpeta):', basePath);
+        return basePath;
     }
+    
+    console.log('Ruta base detectada (raíz): /');
     return '/';
 }
 

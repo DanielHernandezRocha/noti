@@ -29,7 +29,7 @@
       "name": "Nueva Frase",
       "short_name": "Frase",
       "description": "Recibir una nueva frase filosófica",
-      "url": "/?action=new-quote",
+      "url": "./?action=new-quote",
       "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
     }
   ]

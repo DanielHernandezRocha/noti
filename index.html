@@ -76,9 +76,39 @@
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
+        // Detectar ruta base para configurar el Service Worker correctamente
+        const path = window.location.pathname;
+        let basePath = '/';
+        const parts = path.split('/').filter(p => p && p !== 'index.html');
+        if (parts.length > 0 && parts[0] !== '') {
+          basePath = '/' + parts[0] + '/';
+        }
+        
+        // Configurar el path del Service Worker para GitHub Pages
+        // Usaremos nuestro propio sw.js que ya importa el SDK de OneSignal
+        const swPath = basePath === '/' ? 'sw.js' : basePath.replace(/\/$/, '') + '/sw.js';
+        
+        console.log('OneSignal: Configurando con basePath:', basePath);
+        console.log('OneSignal: Service Worker path:', swPath);
+        
         await OneSignal.init({
           appId: "5554b17c-3876-4f49-bbfb-079109449e9c",
+          // Usar nuestro Service Worker que ya importa el SDK de OneSignal
+          serviceWorkerParam: { 
+            scope: basePath 
+          },
+          serviceWorkerPath: swPath,
+          // Configuraciones adicionales
+          notifyButton: {
+            enable: false
+          },
+          allowLocalhostAsSecureOrigin: true,
+          welcomeNotification: {
+            disable: true
+          }
         });
+        
+        console.log('OneSignal configurado correctamente. Usando nuestro Service Worker:', swPath);
       });
     </script>
     <script src="app.js"></script>
