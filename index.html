@@ -84,20 +84,19 @@
           basePath = '/' + parts[0] + '/';
         }
         
-        // Configurar el path del Service Worker para GitHub Pages
-        // Usaremos nuestro propio sw.js que ya importa el SDK de OneSignal
-        const swPath = basePath === '/' ? 'sw.js' : basePath.replace(/\/$/, '') + '/sw.js';
+        // Configurar OneSignal para usar OneSignalSDKWorker.js
+        // Este archivo importa el SDK de OneSignal y maneja las notificaciones push
+        const oneSignalSWPath = basePath === '/' ? 'OneSignalSDKWorker.js' : basePath.replace(/\/$/, '') + '/OneSignalSDKWorker.js';
         
         console.log('OneSignal: Configurando con basePath:', basePath);
-        console.log('OneSignal: Service Worker path:', swPath);
+        console.log('OneSignal: Service Worker path:', oneSignalSWPath);
         
         await OneSignal.init({
           appId: "5554b17c-3876-4f49-bbfb-079109449e9c",
-          // Usar nuestro Service Worker que ya importa el SDK de OneSignal
           serviceWorkerParam: { 
-            scope: basePath 
+            scope: '/'  // OneSignal usa scope raíz por defecto
           },
-          serviceWorkerPath: swPath,
+          serviceWorkerPath: oneSignalSWPath,
           // Configuraciones adicionales
           notifyButton: {
             enable: false
@@ -108,7 +107,7 @@
           }
         });
         
-        console.log('OneSignal configurado correctamente. Usando nuestro Service Worker:', swPath);
+        console.log('OneSignal configurado correctamente. Service Worker:', oneSignalSWPath);
       });
     </script>
     <script src="app.js"></script>
