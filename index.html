@@ -85,16 +85,19 @@
         }
         
         // Configurar OneSignal para usar OneSignalSDKWorker.js
-        // Este archivo importa el SDK de OneSignal y maneja las notificaciones push
-        const oneSignalSWPath = basePath === '/' ? 'OneSignalSDKWorker.js' : basePath.replace(/\/$/, '') + '/OneSignalSDKWorker.js';
+        // IMPORTANTE: Usar rutas absolutas desde la raíz del dominio
+        const oneSignalSWPath = basePath === '/' 
+          ? '/OneSignalSDKWorker.js' 
+          : basePath + 'OneSignalSDKWorker.js';
         
         console.log('OneSignal: Configurando con basePath:', basePath);
-        console.log('OneSignal: Service Worker path:', oneSignalSWPath);
+        console.log('OneSignal: Service Worker path (absoluto):', oneSignalSWPath);
         
         await OneSignal.init({
           appId: "5554b17c-3876-4f49-bbfb-079109449e9c",
+          // Usar el scope correcto para la subcarpeta
           serviceWorkerParam: { 
-            scope: '/'  // OneSignal usa scope raíz por defecto
+            scope: basePath  // Usar basePath en lugar de '/'
           },
           serviceWorkerPath: oneSignalSWPath,
           // Configuraciones adicionales
@@ -108,6 +111,7 @@
         });
         
         console.log('OneSignal configurado correctamente. Service Worker:', oneSignalSWPath);
+        console.log('OneSignal scope:', basePath);
       });
     </script>
     <script src="app.js"></script>

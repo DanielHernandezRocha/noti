@@ -85,43 +85,28 @@ async function registerServiceWorker() {
 }
 
 // Inicializar OneSignal (usando OneSignalDeferred)
+let oneSignalInitializationAttempts = 0;
+const MAX_INIT_ATTEMPTS = 10;
+
 function initializeOneSignal() {
+    oneSignalInitializationAttempts++;
+    
+    // Prevenir bucle infinito
+    if (oneSignalInitializationAttempts > MAX_INIT_ATTEMPTS) {
+        console.error('OneSignal: Máximo de intentos de inicialización alcanzado');
+        alert('Error al inicializar OneSignal. Por favor, recarga la página.');
+        return;
+    }
+    
     // OneSignal ya está siendo inicializado por el script en index.html usando OneSignalDeferred
     // Esperamos a que esté completamente listo antes de usar sus métodos
     if (typeof OneSignal !== 'undefined' && window.OneSignal) {
         oneSignalInstance = window.OneSignal;
         
-        // Verificar que OneSignal esté completamente inicializado antes de usar métodos
-        if (typeof oneSignalInstance.on === 'function') {
-            // Event listener para cambios de suscripción
-            oneSignalInstance.on('subscriptionChange', function(isSubscribed) {
-                console.log('Estado de suscripción cambió:', isSubscribed);
-                updateSubscriptionUI(isSubscribed);
-            });
-
-            isOneSignalInitialized = true;
-            console.log('OneSignal inicializado correctamente');
-            
-            // Esperar un momento y luego verificar el estado
-            setTimeout(() => {
-                checkSubscriptionStatus();
-            }, 1000);
-        } else {
-            // OneSignal aún no está completamente inicializado, esperar más
-            console.log('OneSignal cargado pero aún inicializando...');
-            setTimeout(initializeOneSignal, 1000);
-        }
-    } else if (window.OneSignalDeferred) {
-        // Si OneSignal aún no está disponible pero OneSignalDeferred existe,
-        // agregar un callback adicional para cuando esté listo
-        window.OneSignalDeferred.push(async function(OneSignal) {
-            // Esperar a que OneSignal esté completamente inicializado
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-            oneSignalInstance = OneSignal;
-            
-            // Verificar que OneSignal esté completamente inicializado
-            if (typeof oneSignalInstance.on === 'function') {
+        // Esperar un poco más para que OneSignal termine de registrar su Service Worker
+        setTimeout(() => {
+            // Verificar que OneSignal esté completamente inicializado antes de usar métodos
+            if (typeof oneSignalInstance !== 'undefined' && typeof oneSignalInstance.on === 'function') {
                 // Event listener para cambios de suscripción
                 oneSignalInstance.on('subscriptionChange', function(isSubscribed) {
                     console.log('Estado de suscripción cambió:', isSubscribed);
@@ -129,20 +114,50 @@ function initializeOneSignal() {
                 });
 
                 isOneSignalInitialized = true;
-                console.log('OneSignal inicializado desde deferred');
+                console.log('✅ OneSignal inicializado correctamente');
                 
                 // Esperar un momento y luego verificar el estado
                 setTimeout(() => {
                     checkSubscriptionStatus();
                 }, 1000);
             } else {
-                console.log('OneSignal aún no está completamente inicializado');
-                setTimeout(initializeOneSignal, 1000);
+                // OneSignal aún no está completamente inicializado, esperar más
+                console.log(`OneSignal cargado pero aún inicializando... (intento ${oneSignalInitializationAttempts}/${MAX_INIT_ATTEMPTS})`);
+                setTimeout(initializeOneSignal, 2000);
+            }
+        }, 2000);
+    } else if (window.OneSignalDeferred) {
+        // Si OneSignal aún no está disponible pero OneSignalDeferred existe,
+        // agregar un callback adicional para cuando esté listo
+        window.OneSignalDeferred.push(async function(OneSignal) {
+            // Esperar a que OneSignal termine de inicializar su Service Worker
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            oneSignalInstance = OneSignal;
+            
+            // Verificar que OneSignal esté completamente inicializado
+            if (typeof oneSignalInstance !== 'undefined' && typeof oneSignalInstance.on === 'function') {
+                // Event listener para cambios de suscripción
+                oneSignalInstance.on('subscriptionChange', function(isSubscribed) {
+                    console.log('Estado de suscripción cambió:', isSubscribed);
+                    updateSubscriptionUI(isSubscribed);
+                });
+
+                isOneSignalInitialized = true;
+                console.log('✅ OneSignal inicializado desde deferred');
+                
+                // Esperar un momento y luego verificar el estado
+                setTimeout(() => {
+                    checkSubscriptionStatus();
+                }, 1000);
+            } else {
+                console.log(`OneSignal aún no está completamente inicializado (intento ${oneSignalInitializationAttempts}/${MAX_INIT_ATTEMPTS})`);
+                setTimeout(initializeOneSignal, 2000);
             }
         });
     } else {
-        console.log('Esperando a que OneSignal se cargue...');
-        setTimeout(initializeOneSignal, 500);
+        console.log(`Esperando a que OneSignal se cargue... (intento ${oneSignalInitializationAttempts}/${MAX_INIT_ATTEMPTS})`);
+        setTimeout(initializeOneSignal, 1000);
     }
 }
 
