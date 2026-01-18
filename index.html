@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Aplicación de frases filosóficas con notificaciones push">
+    <meta name="theme-color" content="#6366f1">
+    <title>Frases Filosóficas - PWA</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧠 Frases Filosóficas</h1>
+            <p class="subtitle">Recibe inspiración filosófica en tu dispositivo</p>
+        </header>
+
+        <main>
+            <!-- Botón de Instalación PWA -->
+            <div class="button-section" id="installSection" style="display: none;">
+                <button id="installBtn" class="btn btn-primary">
+                    📲 Instalar Aplicación
+                </button>
+                <p class="hint">Instala la app para recibir notificaciones incluso con el navegador cerrado</p>
+            </div>
+
+            <!-- Estado de instalación -->
+            <div class="status-card" id="installedStatus" style="display: none;">
+                <p class="status-text">✅ Aplicación instalada</p>
+            </div>
+
+            <!-- Botón de Suscripción a Notificaciones -->
+            <div class="button-section">
+                <button id="subscribeBtn" class="btn btn-secondary">
+                    🔔 Activar Notificaciones
+                </button>
+                <p class="hint">Permite recibir frases filosóficas como notificaciones</p>
+            </div>
+
+            <!-- Estado de suscripción -->
+            <div class="status-card" id="subscriptionStatus" style="display: none;">
+                <p class="status-text" id="subscriptionStatusText"></p>
+            </div>
+
+            <!-- Botón para Enviar Notificación -->
+            <div class="button-section">
+                <button id="sendNotificationBtn" class="btn btn-accent" disabled>
+                    ✨ Enviar Frase Filosófica
+                </button>
+                <p class="hint">Envía una frase filosófica a todos los usuarios suscritos</p>
+            </div>
+
+            <!-- Frase actual -->
+            <div class="quote-card" id="quoteCard" style="display: none;">
+                <p class="quote-text" id="quoteText"></p>
+                <p class="quote-author" id="quoteAuthor"></p>
+            </div>
+
+            <!-- Loading -->
+            <div class="loading" id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Procesando...</p>
+            </div>
+        </main>
+
+        <footer>
+            <p>Desarrollado como PWA con OneSignal</p>
+        </footer>
+    </div>
+
+    <!-- OneSignal SDK -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script src="app.js"></script>
+</body>
+</html>
